@@ -32,101 +32,111 @@ export default class View {
   }
 
   refreshTagFilters(todos = this.model.getTodos()) {
-  const tags = new Set();
-  todos.forEach((todo) => {
-    (todo.tags || []).forEach((tag) => tags.add(tag));
-  });
+    const tags = new Set();
+    todos.forEach((todo) => {
+      (todo.tags || []).forEach((tag) => tags.add(tag));
+    });
 
-  this.filters.setTagOptions(
-    Array.from(tags).sort((a, b) => a.localeCompare(b)),
-    this.currentFilters.tag,
-  );
-}
+    this.filters.setTagOptions(
+      Array.from(tags).sort((a, b) => a.localeCompare(b)),
+      this.currentFilters.tag,
+    );
+  }
 
   filter(filters) {
-  this.currentFilters = {
-    type: filters.type || 'all',
-    words: filters.words || '',
-    tag: filters.tag || 'all',
-  };
+    this.currentFilters = {
+      type: filters.type || 'all',
+      words: filters.words || '',
+      tag: filters.tag || 'all',
+    };
 
-  const { type, words, tag } = this.currentFilters;
-  const normalizedWords = words.trim().toLowerCase();
-  const [, ...rows] = this.table.getElementsByTagName('tr');
-  for (const row of rows) {
-    const [title, description, tagsCell, completed] = row.children;
-    let shouldHide = false;
-    const rowTags = (row.dataset.tags || '').split(',').filter((value) => value !== '');
+    const { type, words, tag } = this.currentFilters;
+    const normalizedWords = words.trim().toLowerCase();
+    const [, ...rows] = this.table.getElementsByTagName('tr');
+    for (const row of rows) {
+      const [title, description, tagsCell, completed] = row.children;
+      let shouldHide = false;
+      const rowTags = (row.dataset.tags || '').split(',').filter((value) => value !== '');
 
-    if (normalizedWords) {
-      const wordsSource = `${title.innerText} ${description.innerText} ${tagsCell.innerText}`.toLowerCase();
-      shouldHide = !wordsSource.includes(normalizedWords);
-    }
+      if (normalizedWords) {
+        const wordsSource = `${title.innerText} ${description.innerText} ${tagsCell.innerText}`.toLowerCase();
+        shouldHide = !wordsSource.includes(normalizedWords);
+      }
 
-    const shouldBeCompleted = type === 'completed';
-    const isCompleted = completed.children[0].checked;
+      const shouldBeCompleted = type === 'completed';
+      const isCompleted = completed.children[0].checked;
 
-    if (type !== 'all' && shouldBeCompleted !== isCompleted) {
-      shouldHide = true;
-    }
+      if (type !== 'all' && shouldBeCompleted !== isCompleted) {
+        shouldHide = true;
+      }
 
-    if (tag !== 'all' && !rowTags.includes(tag)) {
-      shouldHide = true;
-    }
+      if (tag !== 'all' && !rowTags.includes(tag)) {
+        shouldHide = true;
+      }
 
-    if (shouldHide) {
-      row.classList.add('d-none');
-    } else {
-      row.classList.remove('d-none');
+      if (shouldHide) {
+        row.classList.add('d-none');
+      } else {
+        row.classList.remove('d-none');
+      }
     }
   }
-}
 
   addTodo(title, description, tags) {
-  const todo = this.model.addTodo(title, description, tags);
-  this.createRow(todo);
-  this.refreshTagFilters();
-  this.filter(this.currentFilters);
-}
+    const todo = this.model.addTodo(title, description, tags);
+    this.createRow(todo);
+    this.refreshTagFilters();
+    this.filter(this.currentFilters);
+  }
 
   toggleCompleted(id) {
     this.model.toggleCompleted(id);
   }
 
   editTodo(id, values) {
-  this.model.editTodo(id, values);
-  const row = document.getElementById(id);
-  row.children[0].innerText = values.title;
-  row.children[1].innerText = values.description;
-  this.renderTags(row.children[2], values.tags);
-  row.dataset.tags = values.tags.join(',');
-  row.children[3].children[0].checked = values.completed;
-  this.refreshTagFilters();
-  this.filter(this.currentFilters);
-}
-
-  removeTodo(id) {
-  this.model.removeTodo(id);
-  document.getElementById(id).remove();
-  this.refreshTagFilters();
-  this.filter(this.currentFilters);
-}
-
-  renderTags(cell, tags) {
-  cell.innerHTML = '';
-
-  if (!tags || tags.length === 0) {
-    cell.innerHTML = '<span class="text-muted">No tags</span>';
-    return;
+    this.model.editTodo(id, values);
+    const row = document.getElementById(id);
+    row.children[0].innerText = values.title;
+    row.children[1].innerText = values.description;
+    this.renderTags(row.children[2], values.tags);
+    row.dataset.tags = values.tags.join(',');
+    row.children[3].children[0].checked = values.completed;
+    this.refreshTagFilters();
+    this.filter(this.currentFilters);
   }
 
-  tags.forEach((tag) => {
-    const badge = document.createElement('span');
-    badge.classList.add('badge', 'badge-info', 'mr-1');
-    badge.innerText = tag;
-    cell.appendChild(badge);
-  });
-}
+  removeTodo(id) {
+    this.model.removeTodo(id);
+    document.getElementById(id).remove();
+    this.refreshTagFilters();
+    this.filter(this.currentFilters);
+  }
+
+  renderTags(cell, tags) {
+    cell.innerHTML = '';
+
+    if (!tags || tags.length === 0) {
+      cell.innerHTML = '<span class="text-muted">No tags</span>';
+      return;
+    }
+
+    const currentTheme = localStorage.getItem('theme') || 'dark';
+    
+    tags.forEach((tag) => {
+      const badge = document.createElement('span');
+      badge.classList.add('badge', 'mr-1');
+      
+      // Aplicar clase según el tema actual
+      if (currentTheme === 'light') {
+        badge.classList.add('badge-secondary');
+      } else {
+        badge.classList.add('badge-info');
+      }
+      
+      badge.innerText = tag;
+      cell.appendChild(badge);
+    });
+  }
 
   createRow(todo) {
     const row = this.table.insertRow();
@@ -170,12 +180,5 @@ export default class View {
     removeBtn.innerHTML = '<i class="fa fa-trash"></i>';
     removeBtn.onclick = () => this.removeTodo(todo.id);
     row.children[4].appendChild(removeBtn);
-
-    const currentTheme = localStorage.getItem('theme') || 'dark';
-    if (currentTheme === 'light') {
-      badge.classList.add('badge-secondary');  
-    } else {
-      badge.classList.add('badge-info');
-    }
   }
 }
