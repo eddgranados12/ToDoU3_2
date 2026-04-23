@@ -170,5 +170,12 @@ export default class View {
     removeBtn.innerHTML = '<i class="fa fa-trash"></i>';
     removeBtn.onclick = () => this.removeTodo(todo.id);
     row.children[4].appendChild(removeBtn);
+
+    const currentTheme = localStorage.getItem('theme') || 'dark';
+    if (currentTheme === 'light') {
+      badge.classList.add('badge-secondary');  
+    } else {
+      badge.classList.add('badge-info');
+    }
   }
 }
