@@ -145,11 +145,11 @@ export default class ThemeManager {
       const text = this.themeToggle.parentElement.querySelector('.theme-text');
       
       if (theme === 'light') {
-        icon.className = 'fa fa-sun mr-1';
-        text.textContent = 'Light';
+        icon.className = 'fa fa-sun mr-1';     // Icono sol
+        text.textContent = 'Light';             // Texto "Light"
       } else {
-        icon.className = 'fa fa-moon mr-1';
-        text.textContent = 'Dark';
+        icon.className = 'fa fa-moon mr-1';    // Icono luna
+        text.textContent = 'Dark';              // Texto "Dark"
       }
     }
   }

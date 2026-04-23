@@ -1,0 +1,64 @@
+/* themes.css - Estilos personalizados para el cambio de tema */
+
+/* Variables CSS para facilitar el mantenimiento */
+:root {
+  --transition-speed: 0.3s;
+}
+
+/* Transiciones suaves para todos los elementos */
+body, .navbar, .table, .card, .modal-content, 
+input, textarea, select, .btn, .badge {
+  transition: background-color var(--transition-speed) ease,
+              color var(--transition-speed) ease,
+              border-color var(--transition-speed) ease;
+}
+
+/* Estilos específicos para el interruptor */
+.custom-switch .custom-control-label::before {
+  transition: all var(--transition-speed) ease;
+}
+
+.custom-switch .custom-control-input:checked ~ .custom-control-label::before {
+  background-color: #28a745;
+  border-color: #28a745;
+}
+
+/* Mejoras visuales para el tema claro */
+body[data-theme="light"] .table-hover tbody tr:hover {
+  background-color: rgba(0, 0, 0, 0.075);
+}
+
+/* Estilos para contenedores y tarjetas */
+.card, .modal-content {
+  border: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilos para inputs y formularios */
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  transition: box-shadow var(--transition-speed) ease;
+}
+
+/* Estilos para botones en tema claro */
+body[data-theme="light"] .btn-info {
+  background-color: #17a2b8;
+  border-color: #17a2b8;
+}
+
+body[data-theme="light"] .btn-info:hover {
+  background-color: #138496;
+  border-color: #117a8b;
+}
+
+/* Estilos para botones en tema oscuro */
+body[data-theme="dark"] .btn-info {
+  background-color: #0b5ed7;
+  border-color: #0a58ca;
+}
+
+body[data-theme="dark"] .btn-info:hover {
+  background-color: #0a58ca;
+  border-color: #0a53be;
+} 
