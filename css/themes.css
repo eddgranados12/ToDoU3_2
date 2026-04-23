@@ -1,16 +1,23 @@
 /* themes.css - Estilos personalizados para el cambio de tema */
 
-/* Variables CSS para facilitar el mantenimiento */
 :root {
   --transition-speed: 0.3s;
 }
 
-/* Transiciones suaves para todos los elementos */
-body, .navbar, .table, .card, .modal-content, 
-input, textarea, select, .btn, .badge {
-  transition: background-color var(--transition-speed) ease,
-              color var(--transition-speed) ease,
-              border-color var(--transition-speed) ease;
+/* Transiciones suaves */
+body, 
+.navbar, 
+.table, 
+.table td, 
+.table th,
+.card, 
+.modal-content, 
+input, 
+textarea, 
+select, 
+.btn, 
+.badge {
+  transition: all 0.3s ease-in-out;
 }
 
 /* Estilos específicos para el interruptor */
@@ -23,42 +30,62 @@ input, textarea, select, .btn, .badge {
   border-color: #28a745;
 }
 
-/* Mejoras visuales para el tema claro */
+/* Estilos para la tabla en tema claro */
+body[data-theme="light"] .table {
+  color: #212529 !important;
+  background-color: #ffffff;
+}
+
+body[data-theme="light"] .table td,
+body[data-theme="light"] .table th {
+  color: #212529 !important;
+  border-color: #dee2e6;
+}
+
+body[data-theme="light"] .table-striped tbody tr:nth-of-type(odd) {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
 body[data-theme="light"] .table-hover tbody tr:hover {
   background-color: rgba(0, 0, 0, 0.075);
 }
 
-/* Estilos para contenedores y tarjetas */
+/* Estilos para la tabla en tema oscuro */
+body[data-theme="dark"] .table {
+  color: #f8f9fa !important;
+  background-color: #454d55;
+}
+
+body[data-theme="dark"] .table td,
+body[data-theme="dark"] .table th {
+  color: #f8f9fa !important;
+  border-color: #5a6268;
+}
+
+/* Estilos para badges */
+.badge {
+  font-size: 0.8rem;
+  padding: 0.25rem 0.5rem;
+}
+
+/* Mejoras visuales */
 .card, .modal-content {
   border: none;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Estilos para inputs y formularios */
+/* Estilos para inputs */
 input:focus, textarea:focus, select:focus {
   outline: none;
   box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-  transition: box-shadow var(--transition-speed) ease;
 }
 
-/* Estilos para botones en tema claro */
-body[data-theme="light"] .btn-info {
-  background-color: #17a2b8;
-  border-color: #17a2b8;
+/* Estilos específicos para el navbar en tema claro */
+body[data-theme="light"] .navbar-light .navbar-brand,
+body[data-theme="light"] .navbar-light .nav-link {
+  color: #212529;
 }
 
-body[data-theme="light"] .btn-info:hover {
-  background-color: #138496;
-  border-color: #117a8b;
+body[data-theme="light"] .navbar-light .navbar-brand:hover {
+  color: #000000;
 }
-
-/* Estilos para botones en tema oscuro */
-body[data-theme="dark"] .btn-info {
-  background-color: #0b5ed7;
-  border-color: #0a58ca;
-}
-
-body[data-theme="dark"] .btn-info:hover {
-  background-color: #0a58ca;
-  border-color: #0a53be;
-} 

@@ -13,14 +13,12 @@ export default class ThemeManager {
   }
 
   createThemeToggle() {
-    // Crear el botón de cambio de tema
     const navbar = document.querySelector('.navbar-collapse');
     if (!navbar) return;
 
     const themeContainer = document.createElement('div');
     themeContainer.className = 'form-inline ml-3';
     
-    // Usar un switch (interruptor) para mejor UX
     themeContainer.innerHTML = `
       <div class="custom-control custom-switch">
         <input type="checkbox" class="custom-control-input" id="themeSwitch">
@@ -33,7 +31,9 @@ export default class ThemeManager {
     
     navbar.appendChild(themeContainer);
     this.themeToggle = document.getElementById('themeSwitch');
-    this.themeToggle.checked = this.currentTheme === 'light';
+    if (this.themeToggle) {
+      this.themeToggle.checked = this.currentTheme === 'light';
+    }
   }
 
   setupEventListeners() {
@@ -48,6 +48,7 @@ export default class ThemeManager {
   setTheme(theme) {
     this.currentTheme = theme;
     localStorage.setItem('theme', theme);
+    document.body.setAttribute('data-theme', theme);
     this.applyTheme(theme);
     this.updateToggleUI(theme);
   }
@@ -56,85 +57,135 @@ export default class ThemeManager {
     const body = document.body;
     const navbar = document.querySelector('.navbar');
     const table = document.getElementById('table');
-    const cards = document.querySelectorAll('.card, .modal-content');
+    const cards = document.querySelectorAll('.modal-content');
     const inputs = document.querySelectorAll('input, textarea, select');
-    const buttons = document.querySelectorAll('.btn');
     
     if (theme === 'light') {
-      // Tema claro
+      // ========== TEMA CLARO ==========
       body.style.backgroundColor = '#f5f5f5';
       body.style.color = '#212529';
       
+      // Cambiar navbar
       if (navbar) {
         navbar.classList.remove('navbar-dark', 'bg-dark');
         navbar.classList.add('navbar-light', 'bg-light');
       }
       
+      // Cambiar tabla - IMPORTANTE: el texto debe ser oscuro
       if (table) {
         table.classList.remove('table-dark');
-        table.classList.add('table-striped');
+        table.classList.add('table-striped', 'table-light');
+        // Forzar color de texto oscuro en la tabla
+        table.style.color = '#212529';
       }
       
+      // Cambiar todas las celdas de la tabla
+      const allCells = document.querySelectorAll('#table td, #table th');
+      allCells.forEach(cell => {
+        cell.style.color = '#212529';
+      });
+      
+      // Cambiar filas de la tabla
+      const rows = document.querySelectorAll('#table tr');
+      rows.forEach(row => {
+        row.style.color = '#212529';
+      });
+      
+      // Cambiar modal
       cards.forEach(card => {
         card.classList.remove('bg-dark', 'text-white');
         card.classList.add('bg-white', 'text-dark');
       });
       
+      // Cambiar inputs
       inputs.forEach(input => {
-        input.classList.remove('bg-dark', 'text-white');
-        input.classList.add('bg-white', 'text-dark');
+        input.classList.remove('bg-dark', 'text-white', 'border-secondary');
+        input.classList.add('bg-white', 'text-dark', 'border-light');
+      });
+      
+      // Actualizar badges
+      document.querySelectorAll('.badge-info').forEach(badge => {
+        badge.classList.remove('badge-info');
+        badge.classList.add('badge-secondary');
       });
       
     } else {
-      // Tema oscuro
+      // ========== TEMA OSCURO ==========
       body.style.backgroundColor = '#343a40';
       body.style.color = '#f8f9fa';
       
+      // Cambiar navbar
       if (navbar) {
         navbar.classList.remove('navbar-light', 'bg-light');
         navbar.classList.add('navbar-dark', 'bg-dark');
       }
       
+      // Cambiar tabla
       if (table) {
+        table.classList.remove('table-striped', 'table-light');
         table.classList.add('table-dark');
-        table.classList.remove('table-striped');
+        table.style.color = '#f8f9fa';
       }
       
+      // Cambiar todas las celdas de la tabla
+      const allCells = document.querySelectorAll('#table td, #table th');
+      allCells.forEach(cell => {
+        cell.style.color = '#f8f9fa';
+      });
+      
+      // Cambiar filas de la tabla
+      const rows = document.querySelectorAll('#table tr');
+      rows.forEach(row => {
+        row.style.color = '#f8f9fa';
+      });
+      
+      // Cambiar modal
       cards.forEach(card => {
         card.classList.remove('bg-white', 'text-dark');
         card.classList.add('bg-dark', 'text-white');
       });
       
+      // Cambiar inputs
       inputs.forEach(input => {
-        input.classList.remove('bg-white', 'text-dark');
-        input.classList.add('bg-dark', 'text-white');
+        input.classList.remove('bg-white', 'text-dark', 'border-light');
+        input.classList.add('bg-dark', 'text-white', 'border-secondary');
+      });
+      
+      // Actualizar badges
+      document.querySelectorAll('.badge-secondary').forEach(badge => {
+        badge.classList.remove('badge-secondary');
+        badge.classList.add('badge-info');
       });
     }
     
-    // Actualizar colores específicos de elementos
-    this.updateSpecificElements(theme);
+    // Actualizar los badges de los tags (por si hay cambios dinámicos)
+    this.updateAllBadges(theme);
   }
 
-  updateSpecificElements(theme) {
-    // Actualizar badges y otros elementos específicos
-    const badges = document.querySelectorAll('.badge');
-    badges.forEach(badge => {
-      if (theme === 'light') {
-        badge.classList.remove('badge-info');
-        badge.classList.add('badge-secondary');
-      } else {
-        badge.classList.remove('badge-secondary');
-        badge.classList.add('badge-info');
-      }
-    });
-    
-    // Actualizar el color del texto en el navbar
-    const navLinks = document.querySelectorAll('.nav-link, .navbar-brand');
-    navLinks.forEach(link => {
-      if (theme === 'light') {
-        link.style.color = '#212529';
-      } else {
-        link.style.color = '#f8f9fa';
+  updateAllBadges(theme) {
+    // Buscar todos los contenedores de tags y volver a renderizar
+    const tagCells = document.querySelectorAll('#table td:nth-child(3)');
+    tagCells.forEach(cell => {
+      const tags = [];
+      const badges = cell.querySelectorAll('.badge');
+      badges.forEach(badge => {
+        tags.push(badge.innerText);
+      });
+      
+      if (tags.length > 0) {
+        // Volver a renderizar con el tema correcto
+        cell.innerHTML = '';
+        tags.forEach(tag => {
+          const badge = document.createElement('span');
+          badge.classList.add('badge', 'mr-1');
+          if (theme === 'light') {
+            badge.classList.add('badge-secondary');
+          } else {
+            badge.classList.add('badge-info');
+          }
+          badge.innerText = tag;
+          cell.appendChild(badge);
+        });
       }
     });
   }
@@ -144,12 +195,14 @@ export default class ThemeManager {
       const icon = this.themeToggle.parentElement.querySelector('.fa');
       const text = this.themeToggle.parentElement.querySelector('.theme-text');
       
-      if (theme === 'light') {
-        icon.className = 'fa fa-sun mr-1';     // Icono sol
-        text.textContent = 'Light';             // Texto "Light"
-      } else {
-        icon.className = 'fa fa-moon mr-1';    // Icono luna
-        text.textContent = 'Dark';              // Texto "Dark"
+      if (icon && text) {
+        if (theme === 'light') {
+          icon.className = 'fa fa-sun mr-1';
+          text.textContent = 'Light';
+        } else {
+          icon.className = 'fa fa-moon mr-1';
+          text.textContent = 'Dark';
+        }
       }
     }
   }
